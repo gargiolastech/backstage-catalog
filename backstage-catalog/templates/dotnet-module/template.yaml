@@ -24,7 +24,7 @@ spec:
       name: Fetch skeleton
       action: fetch:template
       input:
-        url: ./skeleton
+        url: https://github.com/gargiolastech/backstage-catalog/tree/main/backstage-catalog/templates/dotnet-module/skeleton
         values:
           moduleName: ${{ parameters.moduleName }}
           schemaName: ${{ parameters.schemaName }}
