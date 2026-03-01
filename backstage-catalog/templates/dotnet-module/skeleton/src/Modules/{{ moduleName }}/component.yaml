@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: myapp-{{ moduleName | lower }}
+  description: {{ moduleName }} bounded context module
+  tags: [dotnet, modular-monolith]
+spec:
+  type: service
+  lifecycle: development
+  owner: team-backend
+  system: myapp
