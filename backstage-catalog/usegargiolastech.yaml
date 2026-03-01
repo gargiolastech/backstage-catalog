@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: gargiolastech
+spec:
+  profile:
+    displayName: GargiolasTech
+    email: gargiolastech@outlook.com
+  memberOf: []
