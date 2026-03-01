@@ -1,0 +1,38 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: dotnet-modular-module
+  title: Create .NET Modular Monolith Module
+  description: Generates a new module with Clean Architecture structure
+spec:
+  owner: team-backend
+  type: service
+
+  parameters:
+    - title: Module Configuration
+      required: [moduleName, schemaName]
+      properties:
+        moduleName:
+          type: string
+          title: Module Name
+        schemaName:
+          type: string
+          title: PostgreSQL Schema
+
+  steps:
+    - id: fetch
+      name: Fetch skeleton
+      action: fetch:template
+      input:
+        url: ./skeleton
+        values:
+          moduleName: ${{ parameters.moduleName }}
+          schemaName: ${{ parameters.schemaName }}
+
+    # per ora publish:local (debug) oppure publish:github (prod)
+    - id: publish
+      name: Publish to GitHub
+      action: publish:github
+      input:
+        repoUrl: github.com?owner=gargiolastech&repo=myapp
+        branch: main
