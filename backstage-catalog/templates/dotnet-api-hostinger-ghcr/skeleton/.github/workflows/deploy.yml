@@ -13,9 +13,9 @@ concurrency:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ghcr.io/${{ cookiecutter.owner }}/${{ cookiecutter.appName }}
+  IMAGE_NAME: ghcr.io/{{ cookiecutter.owner }}/{{ cookiecutter.appName }}
   APP_NAME: {{ values.appName }}
-  PROJECT_PATH: ./src/${{ cookiecutter.projectName }}/${{ cookiecutter.projectName }}.csproj
+  PROJECT_PATH: ./src/{{ cookiecutter.projectName }}/{{ cookiecutter.projectName }}.csproj
 
 jobs:
   tests:
