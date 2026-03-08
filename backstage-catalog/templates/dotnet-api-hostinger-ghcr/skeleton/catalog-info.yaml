@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: {{ values.appName }}
+  description: {{ values.description }}
+  tags:
+    - dotnet
+    - api
+    - docker
+    - ghcr
+    - hostinger
+    - traefik
+spec:
+  type: service
+  lifecycle: experimental
+  owner: team-backend
