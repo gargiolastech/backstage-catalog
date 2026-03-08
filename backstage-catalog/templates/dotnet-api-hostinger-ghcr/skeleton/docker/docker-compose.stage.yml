@@ -1,7 +1,7 @@
 services:
-  {{ values.appName }}-stage:
-    image: ghcr.io/{{ values.owner }}/{{ values.appName }}:stage
-    container_name: {{ values.appName }}-stage
+  {{ cookiecutter.appName }}-stage:
+    image: ghcr.io/{{ cookiecutter.owner }}/{{ cookiecutter.appName }}:stage
+    container_name: {{ cookiecutter.appName }}-stage
     restart: unless-stopped
 
     environment:
@@ -10,17 +10,17 @@ services:
 
     labels:
       - traefik.enable=true
-      - traefik.http.routers.{{ values.appName }}-stage.rule=Host(`{{ values.stageHost }}`) && PathPrefix(`{{ values.routePrefix }}`)
-      - traefik.http.routers.{{ values.appName }}-stage.entrypoints=web,websecure
-      - traefik.http.routers.{{ values.appName }}-stage.tls=true
-      - traefik.http.routers.{{ values.appName }}-stage.tls.certresolver={{ values.traefikCertResolver }}
-      - traefik.http.middlewares.{{ values.appName }}-stage-strip.stripprefix.prefixes={{ values.routePrefix }}
-      - traefik.http.routers.{{ values.appName }}-stage.middlewares={{ values.appName }}-stage-strip@docker
-      - traefik.http.services.{{ values.appName }}-stage.loadbalancer.server.port=8080
+      - traefik.http.routers.{{ cookiecutter.appName }}-stage.rule=Host(`{{ cookiecutter.stageHost }}`) && PathPrefix(`{{ cookiecutter.routePrefix }}`)
+      - traefik.http.routers.{{ cookiecutter.appName }}-stage.entrypoints=web,websecure
+      - traefik.http.routers.{{ cookiecutter.appName }}-stage.tls=true
+      - traefik.http.routers.{{ cookiecutter.appName }}-stage.tls.certresolver={{ cookiecutter.traefikCertResolver }}
+      - traefik.http.middlewares.{{ cookiecutter.appName }}-stage-strip.stripprefix.prefixes={{ cookiecutter.routePrefix }}
+      - traefik.http.routers.{{ cookiecutter.appName }}-stage.middlewares={{ cookiecutter.appName }}-stage-strip@docker
+      - traefik.http.services.{{ cookiecutter.appName }}-stage.loadbalancer.server.port=8080
 
     networks:
-      - {{ values.dockerNetwork }}
+      - {{ cookiecutter.dockerNetwork }}
 
 networks:
-  {{ values.dockerNetwork }}:
+  {{ cookiecutter.dockerNetwork }}:
     external: true

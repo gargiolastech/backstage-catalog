@@ -114,7 +114,7 @@ spec:
       input:
         description: ${{ parameters.description }}
         repoUrl: ${{ parameters.repoUrl }}
-        defaultBranch: develop
+        defaultBranch: main
         protectDefaultBranch: false
 
     - id: register

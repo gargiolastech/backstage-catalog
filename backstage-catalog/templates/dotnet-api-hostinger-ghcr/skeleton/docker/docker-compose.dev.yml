@@ -1,7 +1,7 @@
 services:
-  {{ values.appName }}-dev:
-    image: ghcr.io/{{ values.owner }}/{{ values.appName }}:dev
-    container_name: {{ values.appName }}-dev
+  {{ cookiecutter.appName }}-dev:
+    image: ghcr.io/{{ cookiecutter.owner }}/{{ cookiecutter.appName }}:dev
+    container_name: {{ cookiecutter.appName }}-dev
     restart: unless-stopped
 
     environment:
@@ -10,17 +10,17 @@ services:
 
     labels:
       - traefik.enable=true
-      - traefik.http.routers.{{ values.appName }}-dev.rule=Host(`{{ values.devHost }}`) && PathPrefix(`{{ values.routePrefix }}`)
-      - traefik.http.routers.{{ values.appName }}-dev.entrypoints=web,websecure
-      - traefik.http.routers.{{ values.appName }}-dev.tls=true
-      - traefik.http.routers.{{ values.appName }}-dev.tls.certresolver={{ values.traefikCertResolver }}
-      - traefik.http.middlewares.{{ values.appName }}-dev-strip.stripprefix.prefixes={{ values.routePrefix }}
-      - traefik.http.routers.{{ values.appName }}-dev.middlewares={{ values.appName }}-dev-strip@docker
-      - traefik.http.services.{{ values.appName }}-dev.loadbalancer.server.port=8080
+      - traefik.http.routers.{{ cookiecutter.appName }}-dev.rule=Host(`{{ cookiecutter.devHost }}`) && PathPrefix(`{{ cookiecutter.routePrefix }}`)
+      - traefik.http.routers.{{ cookiecutter.appName }}-dev.entrypoints=web,websecure
+      - traefik.http.routers.{{ cookiecutter.appName }}-dev.tls=true
+      - traefik.http.routers.{{ cookiecutter.appName }}-dev.tls.certresolver={{ cookiecutter.traefikCertResolver }}
+      - traefik.http.middlewares.{{ cookiecutter.appName }}-dev-strip.stripprefix.prefixes={{ cookiecutter.routePrefix }}
+      - traefik.http.routers.{{ cookiecutter.appName }}-dev.middlewares={{ cookiecutter.appName }}-dev-strip@docker
+      - traefik.http.services.{{ cookiecutter.appName }}-dev.loadbalancer.server.port=8080
 
     networks:
-      - {{ values.dockerNetwork }}
+      - {{ cookiecutter.dockerNetwork }}
 
 networks:
-  {{ values.dockerNetwork }}:
+  {{ cookiecutter.dockerNetwork }}:
     external: true
