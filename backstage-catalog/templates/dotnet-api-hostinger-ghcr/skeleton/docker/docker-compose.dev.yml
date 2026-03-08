@@ -1,0 +1,26 @@
+services:
+  {{ values.appName }}-dev:
+    image: ghcr.io/{{ values.owner }}/{{ values.appName }}:dev
+    container_name: {{ values.appName }}-dev
+    restart: unless-stopped
+
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.{{ values.appName }}-dev.rule=Host(`{{ values.devHost }}`) && PathPrefix(`{{ values.routePrefix }}`)
+      - traefik.http.routers.{{ values.appName }}-dev.entrypoints=web,websecure
+      - traefik.http.routers.{{ values.appName }}-dev.tls=true
+      - traefik.http.routers.{{ values.appName }}-dev.tls.certresolver={{ values.traefikCertResolver }}
+      - traefik.http.middlewares.{{ values.appName }}-dev-strip.stripprefix.prefixes={{ values.routePrefix }}
+      - traefik.http.routers.{{ values.appName }}-dev.middlewares={{ values.appName }}-dev-strip@docker
+      - traefik.http.services.{{ values.appName }}-dev.loadbalancer.server.port=8080
+
+    networks:
+      - {{ values.dockerNetwork }}
+
+networks:
+  {{ values.dockerNetwork }}:
+    external: true

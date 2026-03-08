@@ -1,0 +1,26 @@
+services:
+  {{ values.appName }}-stage:
+    image: ghcr.io/{{ values.owner }}/{{ values.appName }}:stage
+    container_name: {{ values.appName }}-stage
+    restart: unless-stopped
+
+    environment:
+      ASPNETCORE_ENVIRONMENT: Staging
+      ASPNETCORE_URLS: http://+:8080
+
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.{{ values.appName }}-stage.rule=Host(`{{ values.stageHost }}`) && PathPrefix(`{{ values.routePrefix }}`)
+      - traefik.http.routers.{{ values.appName }}-stage.entrypoints=web,websecure
+      - traefik.http.routers.{{ values.appName }}-stage.tls=true
+      - traefik.http.routers.{{ values.appName }}-stage.tls.certresolver={{ values.traefikCertResolver }}
+      - traefik.http.middlewares.{{ values.appName }}-stage-strip.stripprefix.prefixes={{ values.routePrefix }}
+      - traefik.http.routers.{{ values.appName }}-stage.middlewares={{ values.appName }}-stage-strip@docker
+      - traefik.http.services.{{ values.appName }}-stage.loadbalancer.server.port=8080
+
+    networks:
+      - {{ values.dockerNetwork }}
+
+networks:
+  {{ values.dockerNetwork }}:
+    external: true
