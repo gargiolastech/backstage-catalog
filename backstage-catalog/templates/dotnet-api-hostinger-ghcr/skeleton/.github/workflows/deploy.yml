@@ -8,7 +8,7 @@ on:
       - main
 
 concurrency:
-  group: deploy-${{ github.ref_name }}
+  group: deploy-{% raw %}${{ github.ref_name }}{% endraw %}
   cancel-in-progress: true
 
 env:
@@ -32,10 +32,10 @@ jobs:
           dotnet-version: 9.0.x
 
       - name: Restore API
-        run: dotnet restore "${{ env.PROJECT_PATH }}"
+        run: dotnet restore "{% raw %}${{ env.PROJECT_PATH }}{% endraw %}"
 
       - name: Build API
-        run: dotnet build "${{ env.PROJECT_PATH }}" --configuration Release --no-restore
+        run: dotnet build "{% raw %}${{ env.PROJECT_PATH }}{% endraw %}" --configuration Release --no-restore
 
       - name: Skip tests temporarily
         run: echo "No tests project configured yet"
@@ -90,17 +90,17 @@ jobs:
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ secrets.GHCR_USERNAME }}
-          password: ${{ secrets.GHCR_PAT }}
+          registry: {% raw %}${{ env.REGISTRY }}{% endraw %}
+          username: {% raw %}${{ secrets.GHCR_USERNAME }}{% endraw %}
+          password: {% raw %}${{ secrets.GHCR_PAT }}{% endraw %}
 
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.IMAGE_NAME }}
+          images: {% raw %}${{ env.IMAGE_NAME }}{% endraw %}
           tags: |
-            type=raw,value=${{ steps.vars.outputs.image_tag }}
+            type=raw,value={% raw %}${{ steps.vars.outputs.image_tag }}{% endraw %}
             type=sha,prefix=sha-
 
       - name: Build and push image
@@ -109,46 +109,46 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: {% raw %}${{ steps.meta.outputs.tags }}{% endraw %}
+          labels: {% raw %}${{ steps.meta.outputs.labels }}{% endraw %}
 
       - name: Ensure app folder exists
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
+          host: {% raw %}${{ secrets.VPS_HOST }}{% endraw %}
+          username: {% raw %}${{ secrets.VPS_USER }}{% endraw %}
+          key: {% raw %}${{ secrets.VPS_SSH_KEY }}{% endraw %}
           script: |
-            mkdir -p "${{ steps.vars.outputs.app_dir }}"
+            mkdir -p "{% raw %}${{ steps.vars.outputs.app_dir }}{% endraw %}"
 
       - name: Copy compose file
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          source: "${{ steps.vars.outputs.compose_source }}"
-          target: "${{ steps.vars.outputs.app_dir }}"
+          host: {% raw %}${{ secrets.VPS_HOST }}{% endraw %}
+          username: {% raw %}${{ secrets.VPS_USER }}{% endraw %}
+          key: {% raw %}${{ secrets.VPS_SSH_KEY }}{% endraw %}
+          source: "{% raw %}${{ steps.vars.outputs.compose_source }}{% endraw %}"
+          target: "{% raw %}${{ steps.vars.outputs.app_dir }}{% endraw %}"
           strip_components: 1
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
+          host: {% raw %}${{ secrets.VPS_HOST }}{% endraw %}
+          username: {% raw %}${{ secrets.VPS_USER }}{% endraw %}
+          key: {% raw %}${{ secrets.VPS_SSH_KEY }}{% endraw %}
           script: |
             set -e
 
-            APP_DIR="${{ steps.vars.outputs.app_dir }}"
-            CONTAINER_NAME="${{ steps.vars.outputs.container_name }}"
-            IMAGE_NAME="${{ env.IMAGE_NAME }}"
-            IMAGE_TAG="${{ steps.vars.outputs.image_tag }}"
+            APP_DIR="{% raw %}${{ steps.vars.outputs.app_dir }}{% endraw %}"
+            CONTAINER_NAME="{% raw %}${{ steps.vars.outputs.container_name }}{% endraw %}"
+            IMAGE_NAME="{% raw %}${{ env.IMAGE_NAME }}{% endraw %}"
+            IMAGE_TAG="{% raw %}${{ steps.vars.outputs.image_tag }}{% endraw %}"
 
             cd "$APP_DIR"
 
             echo "=== Login GHCR ==="
-            echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u "${{ secrets.GHCR_USERNAME }}" --password-stdin
+            echo "{% raw %}${{ secrets.GHCR_PAT }}{% endraw %}" | docker login ghcr.io -u "{% raw %}${{ secrets.GHCR_USERNAME }}{% endraw %}" --password-stdin
 
             echo "=== Verify image access ==="
             docker pull "${IMAGE_NAME}:${IMAGE_TAG}" || {
