@@ -87,11 +87,6 @@ spec:
               - github.com
             allowedOwners:
               - gargiolastech
-            requestUserCredentials:
-              secretsKey: USER_OAUTH_TOKEN
-              additionalScopes:
-                github:
-                  - workflow
 
   steps:
     - id: fetch-base
@@ -121,7 +116,6 @@ spec:
         repoUrl: ${{ parameters.repoUrl }}
         defaultBranch: develop
         protectDefaultBranch: false
-        token: ${{ secrets.USER_OAUTH_TOKEN }}
 
     - id: register
       name: Register in catalog
