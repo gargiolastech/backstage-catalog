@@ -13,9 +13,9 @@ concurrency:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ghcr.io/{{ values.owner }}/{{ values.appName }}
+  IMAGE_NAME: ghcr.io/${{ values.owner }}/${{ values.appName }}
   APP_NAME: {{ values.appName }}
-  PROJECT_PATH: ./src/{{ values.projectName }}/{{ values.projectName }}.csproj
+  PROJECT_PATH: ./src/${{ values.projectName }}/${{ values.projectName }}.csproj
 
 jobs:
   tests:
@@ -64,22 +64,22 @@ jobs:
               echo "environment_name=dev" >> "$GITHUB_OUTPUT"
               echo "image_tag=dev" >> "$GITHUB_OUTPUT"
               echo "compose_source=docker/docker-compose.dev.yml" >> "$GITHUB_OUTPUT"
-              echo "app_dir=/opt/apps/dev/{{ values.appName }}" >> "$GITHUB_OUTPUT"
-              echo "container_name={{ values.appName }}-dev" >> "$GITHUB_OUTPUT"
+              echo "app_dir=/opt/apps/dev/${{ values.appName }}" >> "$GITHUB_OUTPUT"
+              echo "container_name=${{ values.appName }}-dev" >> "$GITHUB_OUTPUT"
               ;;
             stage)
               echo "environment_name=stage" >> "$GITHUB_OUTPUT"
               echo "image_tag=stage" >> "$GITHUB_OUTPUT"
               echo "compose_source=docker/docker-compose.stage.yml" >> "$GITHUB_OUTPUT"
-              echo "app_dir=/opt/apps/stage/{{ values.appName }}" >> "$GITHUB_OUTPUT"
-              echo "container_name={{ values.appName }}-stage" >> "$GITHUB_OUTPUT"
+              echo "app_dir=/opt/apps/stage/${{ values.appName }}" >> "$GITHUB_OUTPUT"
+              echo "container_name=${{ values.appName }}-stage" >> "$GITHUB_OUTPUT"
               ;;
             main)
               echo "environment_name=prod" >> "$GITHUB_OUTPUT"
               echo "image_tag=prod" >> "$GITHUB_OUTPUT"
               echo "compose_source=docker/docker-compose.prod.yml" >> "$GITHUB_OUTPUT"
-              echo "app_dir=/opt/apps/prod/{{ values.appName }}" >> "$GITHUB_OUTPUT"
-              echo "container_name={{ values.appName }}-prod" >> "$GITHUB_OUTPUT"
+              echo "app_dir=/opt/apps/prod/${{ values.appName }}" >> "$GITHUB_OUTPUT"
+              echo "container_name=${{ values.appName }}-prod" >> "$GITHUB_OUTPUT"
               ;;
             *)
               echo "Unsupported branch: ${GITHUB_REF_NAME}"
