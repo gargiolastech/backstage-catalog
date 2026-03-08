@@ -1,0 +1,132 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: dotnet-api-hostinger-ghcr
+  title: .NET API - Hostinger + GHCR + Traefik
+  description: Generates a .NET 9 Web API starter with Docker, GHCR, GitHub Actions and Traefik-ready compose files for Hostinger VPS.
+  tags:
+    - dotnet
+    - webapi
+    - docker
+    - ghcr
+    - hostinger
+    - traefik
+spec:
+  owner: team-backend
+  type: service
+
+  parameters:
+    - title: Service configuration
+      required:
+        - appName
+        - projectName
+        - repositoryName
+        - owner
+        - routePrefix
+        - devHost
+        - stageHost
+        - prodHost
+      properties:
+        appName:
+          title: Application name
+          type: string
+          description: Kebab-case service/container name, for example `orders-api`.
+          pattern: '^[a-z0-9-]+$'
+          ui:autofocus: true
+        projectName:
+          title: .NET project name
+          type: string
+          description: PascalCase or dotted project name, for example `Orders.Api`.
+          pattern: '^[A-Za-z0-9.]+$'
+        repositoryName:
+          title: Repository name
+          type: string
+          pattern: '^[a-z0-9._-]+$'
+        owner:
+          title: GitHub owner or organization
+          type: string
+          default: gargiolastech
+        description:
+          title: Description
+          type: string
+        routePrefix:
+          title: Route prefix
+          type: string
+          default: /api
+        devHost:
+          title: Development host
+          type: string
+          default: dev.gargiolastech.com
+        stageHost:
+          title: Stage host
+          type: string
+          default: stage.gargiolastech.com
+        prodHost:
+          title: Production host
+          type: string
+          default: api.gargiolastech.com
+        traefikCertResolver:
+          title: Traefik certificate resolver
+          type: string
+          default: mytlschallenge
+        dockerNetwork:
+          title: External Docker network
+          type: string
+          default: n8n_default
+
+    - title: Repository location
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+
+  steps:
+    - id: fetch-base
+      name: Fetch skeleton
+      action: fetch:template
+      input:
+        url: ./skeleton
+        values:
+          appName: ${{ parameters.appName }}
+          projectName: ${{ parameters.projectName }}
+          repositoryName: ${{ parameters.repositoryName }}
+          owner: ${{ parameters.owner }}
+          description: ${{ parameters.description }}
+          routePrefix: ${{ parameters.routePrefix }}
+          devHost: ${{ parameters.devHost }}
+          stageHost: ${{ parameters.stageHost }}
+          prodHost: ${{ parameters.prodHost }}
+          traefikCertResolver: ${{ parameters.traefikCertResolver }}
+          dockerNetwork: ${{ parameters.dockerNetwork }}
+
+    - id: publish
+      name: Publish repository
+      action: publish:github
+      input:
+        allowedHosts:
+          - github.com
+        description: ${{ parameters.description }}
+        repoUrl: ${{ parameters.repoUrl }}
+        defaultBranch: develop
+        protectDefaultBranch: false
+
+    - id: register
+      name: Register in catalog
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+        catalogInfoPath: /catalog-info.yaml
+
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}
