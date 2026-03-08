@@ -92,6 +92,7 @@ spec:
       action: fetch:template
       input:
         url: ./skeleton
+        cookiecutterCompat: true
         values:
           appName: ${{ parameters.appName }}
           projectName: ${{ parameters.projectName }}
